@@ -38,7 +38,6 @@ class Board
 
       true
     else
-      # puts "Too many players already"
       false
     end
 
@@ -65,7 +64,6 @@ class Board
     board = ""
     @state.each_with_index do |row, index|
       row.each_with_index do |cell, j|
-        # puts cell.nil? ? "Nil": cell
         unless cell
           number = j + 1 + (3 * index)
           board += " #{number} "
@@ -83,7 +81,7 @@ class Board
 
   def play
     if @players.length < 2
-      puts "too few players. Please add another player"
+      puts "Too few players. Please add another player"
       return
     end
 
@@ -97,8 +95,8 @@ class Board
     end
 
     (row, column) = parse_input position
-    puts "\nRow: #{row} Column: #{column}"
-    puts "Value: " + (!@state[row][column].nil? ? @state[row][column] : "Nil")
+    # puts "\nRow: #{row} Column: #{column}"
+    # puts "Value: " + (!@state[row][column].nil? ? @state[row][column] : "Nil")
 
     if @state[row][column].nil?
       @state[row][column] = player.character
@@ -139,8 +137,6 @@ class Board
   def check_winner(player)
     plays =  player.last_3_moves.sort
 
-    puts plays
-
     if @winning_patterns.include? plays
       return true
     end
@@ -178,6 +174,7 @@ while board.players.length < 2
 end
 
 puts board.state
+puts
 until board.status
   board.play
 end
