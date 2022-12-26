@@ -1,30 +1,65 @@
-# Polymorphism: A Game system in Ruby
+# How I Built a Command Line Gaming System in Ruby
 
-- [Polymorphism: A Game system in Ruby](#polymorphism-a-game-system-in-ruby)
-  - [What is Polymorphism?](#what-is-polymorphism)
-  - [Why Polymorphism?](#why-polymorphism)
+- [How I Built a Command Line Gaming System in Ruby](#how-i-built-a-command-line-gaming-system-in-ruby)
+  - [Introduction](#introduction)
+  - [Defining our Objects](#defining-our-objects)
 
-## What is Polymorphism?
+## Introduction
+## Defining our Objects
 
-Polymorphism is one of the core concepts of object-oriented programming (OOP) and describes situations in which something occurs in several different forms. In computer science, it describes the concept that you can access objects of different types through the same interface.
-
-Simply put, different types of objects can be made to the same thing in different ways.
-
-## Why Polymorphism?
-Let's look at this example of input and output in Ruby to illustrate
+Consider a Hangman game object implementation below
 
 ```rb
-> $stdout.puts "Hello world"
-# Hello world
+class Hangman
+
+  def initialize
+    # get the guessed word
+    @word = get_random_word
+    @turns = 10
+    @guesses = Hangman.gather_guesses(@word)
+  end
+
+  def state
+    @word.split('').reduce('') do |acc, letter|
+      acc += (" #{letter} " if @guesses[letter]['guessed']) || ' _ '
+      acc
+    end
+  end
+
+  def play
+    print "Enter a guess or 'save' to save the game [Guesses left: (#{turns})]: "
+    letter = gets.chomp.strip
+    
+    if word_has_letter letter
+      @guesses[letter]['guessed'] = true
+    else
+      @wrong_guesses << letter
+      @turns -= 1
+    end
+  end
+
+  def playable
+    @turns > 0 && @guesses.keys.any? {|letter| @guesses[letter]['guessed'] == false}
+  end
+
+  private
+  def self.gather_guesses(word)
+    guesses = {}
+    word.split('').each do |letter|
+      unless guesses.keys.include? letter
+        guesses[letter] = {'count' => 1, 'guessed' => false}
+      else
+        guesses[letter]['count'] += 1
+      end
+    end
+    
+    guesses
+  end
+  
+  def word_has_letter(letter)
+    @guesses.keys.include? letter
+  end
+end
 ```
 
-In the example about, `$stdout` is the computer's **standard output**. In most cases, this can be the console, or the screen. It represents a stream which the computer uses to display information to the standard output. Now let's take a look at writing to files.
-
-```rb
-> file = File.open('hello.txt', 'w')
-> file.puts "Hello world"
-```
-
-We can see here that both the standard output `$stdout` and the `File` object implement the `puts` method. While the standard output displays the output to the user, the `File` object writes it to a file.
-
-We see now how polymorphism allows us to implement objects that can be used in place of each other to perform similar actions, even though they might be performed differently.
+The `Hangman` object has 4 public methods available : `initialize`, `state`, `play`, and `playable` and 2 private methods, 1 static method and 1 instance method : `gather_guesses`, which analyses the guess word data, and `word_has_letter` which checks if the letter supplied is contained in the guess word
